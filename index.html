@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoanálisis: Filtros y Sesgos en Comunicación</title>
+    <meta property="og:title" content="Filtros y Sesgos en la Comunicación Interpersonal">
+    <meta property="og:description" content="Herramienta orientativa de autoanálisis para reflexionar sobre filtros perceptivos y sesgos comunicacionales">
+    <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0e17;
+            --surface: #1a1929;
+            --surface2: #232235;
+            --border: rgba(255,255,255,0.08);
+            --primary: #e8a0bf;
+            --secondary: #a78bfa;
+            --accent: #fbbf24;
+            --success: #34d399;
+            --danger: #fb7185;
+            --text: #f5f0ff;
+            --muted: #9ca3af;
+            --pill-bg: rgba(232,160,191,0.12);
+            --pill-border: rgba(232,160,191,0.3);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15,14,23,0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.02em;
+        }
+
+        .nav-progress-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .nav-bar-mini {
+            width: 80px;
+            height: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .nav-bar-mini-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 20px 50px;
+            position: relative;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--pill-bg);
+            border: 1px solid var(--pill-border);
+            border-radius: 999px;
+            padding: 6px 18px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 28px;
+        }
+
+        .hero h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.15;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .hero h1 em { font-style: italic; color: var(--primary); }
+
+        .hero-sub {
+            font-size: 1rem;
+            color: var(--muted);
+            max-width: 560px;
+            margin: 0 auto 36px;
+            line-height: 1.7;
+        }
+
+        .hero-meta {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .meta-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .meta-chip span.dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--secondary);
+        }
+
+        .info-card, .instructions-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .info-card {
+            background: rgba(167,139,250,0.09);
+            border-color: rgba(167,139,250,0.25);
+        }
+
+        .inst-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        .inst-text h3 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .inst-text p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .progress-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 28px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .prog-label {
+            font-size: 13px;
+            color: var(--muted);
+            white-space: nowrap;
+            min-width: 130px;
+        }
+
+        .prog-bar-track {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .prog-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 0%;
+        }
+
+        .prog-score {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        .question-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            animation: slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .q-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 24px 28px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .q-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .q-text {
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.65;
+            color: var(--text);
+        }
+
+        .q-tag {
+            display: inline-block;
+            background: rgba(167,139,250,0.15);
+            border: 1px solid rgba(167,139,250,0.25);
+            color: var(--secondary);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            border-radius: 6px;
+            padding: 3px 10px;
+            margin-top: 8px;
+        }
+
+        .likert-wrap {
+            border: 0;
+            padding: 22px 28px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .likert-option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            width: 100%;
+        }
+
+        .likert-option:hover {
+            border-color: rgba(232,160,191,0.45);
+            background: rgba(232,160,191,0.06);
+            transform: translateX(4px);
+        }
+
+        input[type="radio"]:focus-visible + .likert-option {
+            outline: 3px solid rgba(232,160,191,0.55);
+            outline-offset: 3px;
+        }
+
+        .likert-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .likert-option .opt-label {
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .likert-option .opt-score {
+            margin-left: auto;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        .likert-option.sel-1 { border-color: var(--success); background: rgba(52,211,153,0.08); }
+        .likert-option.sel-1 .likert-dot { border-color: var(--success); background: var(--success); }
+        .likert-option.sel-1 .opt-label { color: var(--success); }
+        .likert-option.sel-2 { border-color: #6ee7b7; background: rgba(110,231,183,0.07); }
+        .likert-option.sel-2 .likert-dot { border-color: #6ee7b7; background: #6ee7b7; }
+        .likert-option.sel-2 .opt-label { color: #6ee7b7; }
+        .likert-option.sel-3 { border-color: var(--accent); background: rgba(251,191,36,0.07); }
+        .likert-option.sel-3 .likert-dot { border-color: var(--accent); background: var(--accent); }
+        .likert-option.sel-3 .opt-label { color: var(--accent); }
+        .likert-option.sel-4 { border-color: #f97316; background: rgba(249,115,22,0.07); }
+        .likert-option.sel-4 .likert-dot { border-color: #f97316; background: #f97316; }
+        .likert-option.sel-4 .opt-label { color: #f97316; }
+        .likert-option.sel-5 { border-color: var(--danger); background: rgba(251,113,133,0.07); }
+        .likert-option.sel-5 .likert-dot { border-color: var(--danger); background: var(--danger); }
+        .likert-option.sel-5 .opt-label { color: var(--danger); }
+
+        .feedback-panel {
+            display: none;
+            margin: 0 28px 24px;
+            border-radius: 14px;
+            padding: 20px 22px;
+            animation: fadeIn 0.4s ease both;
+        }
+
+        .feedback-panel.alert { background: rgba(251,113,133,0.1); border: 1px solid rgba(251,113,133,0.25); }
+        .feedback-panel.caution { background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.25); }
+        .feedback-panel.ok { background: rgba(110,231,183,0.1); border: 1px solid rgba(110,231,183,0.25); }
+
+        .fb-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .fb-head.alert-h { color: var(--danger); }
+        .fb-head.caution-h { color: var(--accent); }
+        .fb-head.ok-h { color: var(--success); }
+
+        .fb-theory {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            opacity: 0.6;
+            margin-bottom: 8px;
+        }
+
+        .feedback-panel p {
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: var(--text);
+            opacity: 0.9;
+        }
+
+        .fb-reflection {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            font-size: 13px;
+            font-style: italic;
+            color: var(--primary);
+            line-height: 1.65;
+        }
+
+        .q-footer {
+            padding: 0 28px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .edit-note {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .btn-primary, .btn-secondary {
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(167,139,250,0.35); }
+        .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            color: var(--muted);
+            padding: 12px 20px;
+        }
+
+        .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 48px 0 24px;
+        }
+
+        .section-header h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.4rem;
+            white-space: nowrap;
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        #results-screen {
+            display: none;
+            animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .results-hero {
+            text-align: center;
+            padding: 48px 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            margin-bottom: 28px;
+        }
+
+        .score-ring {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .score-ring svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotate(-90deg);
+        }
+
+        .score-ring-inner {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.4rem;
+            color: var(--text);
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-ring-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            position: relative;
+            z-index: 1;
+            max-width: 88px;
+            line-height: 1.25;
+        }
+
+        .results-hero h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .results-hero p {
+            color: var(--muted);
+            max-width: 520px;
+            margin: 0 auto;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .range-legend, .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .profile-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        .range-item, .profile-card, .interpret-card, .actions-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        .range-item {
+            border-radius: 14px;
+            padding: 16px 18px;
+            border-left: 3px solid;
+        }
+
+        .range-item.low { border-left-color: var(--success); }
+        .range-item.mid { border-left-color: var(--accent); }
+        .range-item.high { border-left-color: var(--danger); }
+
+        .range-item .r-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .range-item.low .r-label { color: var(--success); }
+        .range-item.mid .r-label { color: var(--accent); }
+        .range-item.high .r-label { color: var(--danger); }
+        .range-item .r-range { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+        .range-item .r-desc { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
+        .profile-card {
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .profile-card h4 {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        .filter-bar-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-bar-item {
+            display: grid;
+            grid-template-columns: minmax(110px, 140px) 1fr 38px;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-bar-name {
+            font-size: 12px;
+            color: var(--muted);
+            min-width: 0;
+        }
+
+        .filter-bar-track {
+            height: 6px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .filter-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        .filter-bar-val {
+            font-size: 12px;
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .interpret-card, .actions-card {
+            border-radius: 20px;
+            padding: 28px 32px;
+            margin-bottom: 20px;
+        }
+
+        .interpret-card h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 14px;
+            color: var(--text);
+        }
+
+        .interpret-card p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.75;
+        }
+
+        .interpret-card ul {
+            list-style: none;
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .interpret-card li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .interpret-card li::before {
+            content: '->';
+            color: var(--primary);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .final-reflection {
+            margin-top: 18px;
+            padding: 16px 18px;
+            border-radius: 12px;
+            background: rgba(232,160,191,0.08);
+            border: 1px solid rgba(232,160,191,0.22);
+        }
+
+        .actions-card {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .retry-wrap { text-align: center; padding: 12px 0 20px; }
+
+        @media (max-width: 700px) {
+            .wrapper { padding: 24px 16px 60px; }
+            .q-header, .likert-wrap, .q-footer { padding-left: 18px; padding-right: 18px; }
+            .feedback-panel { margin-left: 18px; margin-right: 18px; }
+            .profile-grid, .range-legend { grid-template-columns: 1fr; }
+            .progress-wrap { flex-wrap: wrap; gap: 12px; }
+            .instructions-card, .info-card { flex-direction: column; padding: 24px; }
+            .filter-bar-item { grid-template-columns: minmax(96px, 120px) 1fr 34px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+            .likert-option:hover, .btn-primary:hover { transform: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="sticky-nav" aria-label="Progreso del autoanálisis">
+    <div class="nav-brand">Filtros & Sesgos</div>
+    <div class="nav-progress-mini">
+        <span id="nav-counter">0 / 15</span>
+        <div class="nav-bar-mini" aria-hidden="true">
+            <div class="nav-bar-mini-fill" id="nav-bar-fill"></div>
+        </div>
+    </div>
+</nav>
+
+<main class="wrapper">
+    <section class="hero">
+        <div class="hero-eyebrow">Gestión de Relaciones en las Organizaciones</div>
+        <h1>Mis <em>filtros</em> en la<br>comunicación interpersonal</h1>
+        <p class="hero-sub">
+            Identifica cómo aparecen en tus respuestas siete filtros frecuentes: atención selectiva, atribución, efecto Pigmalión, primera impresión, efecto halo, confirmación y pensamiento catastrófico.
+        </p>
+        <div class="hero-meta">
+            <div class="meta-chip"><span class="dot"></span> 7 sesgos · 15 situaciones</div>
+            <div class="meta-chip"><span class="dot"></span> Feedback inmediato editable</div>
+            <div class="meta-chip"><span class="dot"></span> Perfil orientativo</div>
+        </div>
+    </section>
+
+    <section class="info-card" aria-labelledby="ethical-title">
+        <div class="inst-icon" aria-hidden="true">i</div>
+        <div class="inst-text">
+            <h3 id="ethical-title">Nota ética y de uso</h3>
+            <p>Esta herramienta no diagnostica rasgos psicológicos ni mide competencias de forma validada. Ofrece una lectura orientativa basada en tus respuestas para facilitar reflexión personal, conversación pedagógica y desarrollo comunicacional.</p>
+        </div>
+    </section>
+
+    <section class="instructions-card" aria-labelledby="instructions-title">
+        <div class="inst-icon" aria-hidden="true">?</div>
+        <div class="inst-text">
+            <h3 id="instructions-title">¿Cómo funciona?</h3>
+            <p>Lee cada afirmación y selecciona con qué frecuencia esa situación te describe. Puedes cambiar tus respuestas antes de ver el perfil completo. No hay respuestas correctas: el objetivo es observar patrones y abrir preguntas útiles.</p>
+        </div>
+    </section>
+
+    <section class="progress-wrap" aria-label="Progreso general">
+        <div class="prog-label" id="prog-label">0 de 15 respondidas</div>
+        <div class="prog-bar-track" aria-hidden="true">
+            <div class="prog-bar-fill" id="prog-bar"></div>
+        </div>
+        <div class="prog-score" id="prog-score">Índice: —</div>
+    </section>
+
+    <section id="quiz-container" aria-label="Preguntas de autoanálisis"></section>
+
+    <section id="results-screen" aria-live="polite">
+        <div class="results-hero" id="results-hero">
+            <div class="score-ring" id="score-ring">
+                <svg width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
+                    <circle cx="70" cy="70" r="60" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="10"/>
+                    <circle id="score-arc" cx="70" cy="70" r="60" fill="none" stroke-width="10"
+                            stroke-dasharray="377" stroke-dashoffset="377" stroke-linecap="round"/>
+                </svg>
+                <div class="score-ring-inner" id="ring-score">—</div>
+                <div class="score-ring-label">índice percibido</div>
+            </div>
+            <h2 id="results-title"></h2>
+            <p id="results-desc"></p>
+        </div>
+
+        <div class="range-legend">
+            <div class="range-item low">
+                <div class="r-label">Baja activación percibida</div>
+                <div class="r-range">15-35</div>
+                <div class="r-desc">Tus respuestas sugieren menor presencia de estos filtros en las situaciones planteadas.</div>
+            </div>
+            <div class="range-item mid">
+                <div class="r-label">Activación moderada</div>
+                <div class="r-range">36-55</div>
+                <div class="r-desc">En tus respuestas aparecen algunos filtros que merecen atención y práctica.</div>
+            </div>
+            <div class="range-item high">
+                <div class="r-label">Alta activación percibida</div>
+                <div class="r-range">56-75</div>
+                <div class="r-desc">Tus respuestas podrían indicar varios filtros activos en estas situaciones.</div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>Tu perfil orientativo</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="profile-grid">
+            <div class="profile-card">
+                <h4>Sesgos cognitivos</h4>
+                <div class="filter-bar-wrap" id="bars-cognitivos"></div>
+            </div>
+            <div class="profile-card">
+                <h4>Sesgos relacionales</h4>
+                <div class="filter-bar-wrap" id="bars-relacionales"></div>
+            </div>
+            <div class="profile-card">
+                <h4>Sesgos perceptivos</h4>
+                <div class="filter-bar-wrap" id="bars-perceptivos"></div>
+            </div>
+            <div class="profile-card">
+                <h4>Sesgos emocionales</h4>
+                <div class="filter-bar-wrap" id="bars-emocionales"></div>
+            </div>
+        </div>
+
+        <article class="interpret-card" id="interpret-card">
+            <h3 id="interpret-title"></h3>
+            <p id="interpret-body"></p>
+            <ul id="interpret-list"></ul>
+            <div class="final-reflection">
+                <h3 id="reflection-title"></h3>
+                <p id="reflection-body"></p>
+            </div>
+        </article>
+
+        <div class="actions-card">
+            <button class="btn-secondary" type="button" onclick="copyProfile()">Copiar perfil</button>
+            <button class="btn-secondary" type="button" onclick="downloadProfile()">Descargar perfil</button>
+            <button class="btn-primary" type="button" onclick="resetAll()">Reiniciar autoanálisis</button>
+        </div>
+    </section>
+</main>
+
+<script>
+const questions = [
+    {
+        id: 1,
+        text: "Cuando alguien me hace una observación, tiendo a enfocarme más en la crítica que en los aspectos positivos.",
+        filtro: "Atención Selectiva",
+        categoria: "cognitivo",
+        teoria: "Atención Selectiva",
+        reflexion: "¿Qué aspectos positivos podrían estar quedando fuera de mi atención cuando recibo una observación?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que puedes integrar crítica y reconocimiento sin que una parte borre a la otra. Esa mirada equilibrada favorece aprendizaje y relaciones más justas.",
+            mid: "En tu respuesta aparece una posible tendencia a dar más peso a la crítica que a los aspectos positivos. La atención selectiva puede hacer que una parte de la información parezca representar el todo.",
+            high: "Tu respuesta podría indicar alta activación de atención selectiva. Cuando la crítica ocupa todo el espacio mental, puede distorsionar la evaluación de una conversación que también contiene elementos valiosos."
+        }
+    },
+    {
+        id: 2,
+        text: "Suelo sacar conclusiones sobre una persona desde las primeras interacciones.",
+        filtro: "Primera Impresión",
+        categoria: "perceptivo",
+        teoria: "Sesgo de Primera Impresión",
+        reflexion: "¿Qué información posterior necesito observar antes de convertir una primera impresión en una conclusión estable?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que no conviertes rápidamente las primeras interacciones en conclusiones cerradas. Esa apertura permite conocer a las personas con mayor precisión.",
+            mid: "Tu respuesta podría indicar que las primeras interacciones influyen bastante en tu percepción. Esto es humano, pero conviene dejar espacio para actualizar la imagen inicial.",
+            high: "En tus respuestas aparece una posible activación alta del sesgo de primera impresión. Las primeras señales pueden estar organizando tu lectura posterior de la persona."
+        }
+    },
+    {
+        id: 3,
+        text: "Cuando algo sale mal, imagino rápidamente escenarios muy negativos.",
+        filtro: "Pensamiento Catastrófico",
+        categoria: "emocional",
+        teoria: "Pensamiento Catastrófico",
+        reflexion: "¿Estoy imaginando el escenario más probable o el escenario más temido?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que puedes evaluar los problemas sin saltar de inmediato a escenarios extremos. Esa pausa ayuda a responder con más claridad.",
+            mid: "Tu respuesta podría indicar que, algunas veces, un problema activa escenarios negativos antes de revisar la evidencia disponible.",
+            high: "En tus respuestas aparece una posible activación alta de pensamiento catastrófico. La mente puede convertir una dificultad manejable en una amenaza mayor de lo que la evidencia sostiene."
+        }
+    },
+    {
+        id: 4,
+        text: "Me resulta más fácil notar información que confirma lo que ya pensaba sobre alguien.",
+        filtro: "Sesgo de Confirmación",
+        categoria: "cognitivo",
+        teoria: "Sesgo de Confirmación",
+        reflexion: "¿Qué señales contrarias a mi opinión actual estoy dejando de mirar?",
+        feedbacks: {
+            low: "Tu respuesta sugiere apertura para notar información que contradice tus ideas previas. Esa disposición mejora la precisión de tus juicios.",
+            mid: "Tu respuesta podría indicar una tendencia moderada a notar primero lo que confirma lo que ya pensabas. Este sesgo puede reducir la apertura a información nueva.",
+            high: "En tus respuestas aparece una posible activación alta del sesgo de confirmación. Una opinión previa puede guiar lo que notas, recuerdas e interpretas sobre una persona."
+        }
+    },
+    {
+        id: 5,
+        text: "Si una persona me parece muy agradable, automáticamente asumo que también es muy competente.",
+        filtro: "Efecto Halo",
+        categoria: "perceptivo",
+        teoria: "Efecto Halo",
+        reflexion: "¿Estoy evaluando competencia real o estoy extendiendo una impresión positiva a otras áreas?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que puedes distinguir agrado personal y competencia. Esa separación ayuda a evaluar a las personas con más justicia.",
+            mid: "Tu respuesta podría indicar cierta activación del efecto halo: una cualidad positiva visible puede influir en la evaluación de otras dimensiones.",
+            high: "En tus respuestas aparece una posible activación alta del efecto halo. El agrado que una persona genera podría estar influyendo en tu percepción de su competencia sin evidencia suficiente."
+        }
+    },
+    {
+        id: 6,
+        text: "Cuando alguien comete un error, pienso primero que es por su actitud o personalidad.",
+        filtro: "Sesgo de Atribución",
+        categoria: "cognitivo",
+        teoria: "Sesgo de Atribución",
+        reflexion: "¿Qué factores de contexto debería considerar antes de explicar el error por la personalidad de alguien?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que antes de juzgar buscas contexto. Esa apertura reduce interpretaciones injustas y favorece relaciones más empáticas.",
+            mid: "Tu respuesta podría indicar una tendencia moderada a explicar errores ajenos por actitud o personalidad. Conviene revisar también condiciones, recursos e información disponible.",
+            high: "En tus respuestas aparece una posible activación alta del sesgo de atribución. Explicar primero el error por rasgos personales puede hacer que pierdas contexto relevante."
+        }
+    },
+    {
+        id: 7,
+        text: "Si una conversación me genera ansiedad o incomodidad, interpreto los mensajes de manera más negativa.",
+        filtro: "Atención Selectiva / Emocional",
+        categoria: "emocional",
+        teoria: "Atención Selectiva bajo Activación Emocional",
+        reflexion: "¿Estoy leyendo el mensaje tal como fue expresado, o desde la ansiedad que me generó la conversación?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que puedes distinguir el contenido del mensaje de la emoción que aparece durante la conversación. Esa separación ayuda a responder con más claridad.",
+            mid: "Tu respuesta podría indicar que la incomodidad influye parcialmente en tu interpretación. Bajo ansiedad, la atención suele dirigirse más rápido hacia señales negativas.",
+            high: "En tus respuestas aparece una posible activación alta de atención selectiva emocional. La ansiedad puede hacer que mensajes ambiguos o neutros se lean como más negativos de lo que son."
+        }
+    },
+    {
+        id: 8,
+        text: "Cuando espero que alguien actúe de cierta manera, termino interpretando sus conductas según esa expectativa.",
+        filtro: "Confirmación / Pigmalión",
+        categoria: "relacional",
+        teoria: "Sesgo de Confirmación y Efecto Pigmalión",
+        reflexion: "¿Estoy observando lo que la persona hace, o buscando señales que encajen con lo que ya esperaba de ella?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que puedes observar la conducta sin quedar demasiado atrapado por expectativas previas. Esto favorece evaluaciones más flexibles.",
+            mid: "Tu respuesta podría indicar que tus expectativas influyen parcialmente en la interpretación de conductas. Este cruce entre confirmación y Pigmalión puede moldear el trato cotidiano.",
+            high: "En tus respuestas aparece una posible activación alta de expectativas previas. Podrías estar interpretando conductas de modo que confirmen lo que esperabas, incluso cuando la evidencia permite otras lecturas."
+        }
+    },
+    {
+        id: 9,
+        text: "Me cuesta modificar una impresión negativa inicial sobre una persona.",
+        filtro: "Primera Impresión",
+        categoria: "perceptivo",
+        teoria: "Sesgo de Primera Impresión / Persistencia Perceptiva",
+        reflexion: "¿Qué evidencia reciente podría ayudarme a actualizar esa impresión inicial?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que puedes actualizar una impresión negativa cuando aparece información nueva. Esa flexibilidad mejora la calidad de tus relaciones.",
+            mid: "Tu respuesta podría indicar que una impresión negativa inicial conserva cierto peso. Conviene revisar si la persona actual sigue siendo leída desde una imagen pasada.",
+            high: "En tus respuestas aparece una posible persistencia fuerte de impresiones negativas iniciales. Esto puede dificultar reconocer cambios, aprendizajes o conductas positivas posteriores."
+        }
+    },
+    {
+        id: 10,
+        text: "Después de cometer un error, pienso que podría afectar gravemente mi imagen o futuro.",
+        filtro: "Pensamiento Catastrófico",
+        categoria: "emocional",
+        teoria: "Pensamiento Catastrófico / Exageración de Consecuencias",
+        reflexion: "¿Qué evidencia tengo de que este error tendrá consecuencias graves y duraderas?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que puedes poner los errores en perspectiva. Esto facilita reparar, aprender y continuar sin sobredimensionar las consecuencias.",
+            mid: "Tu respuesta podría indicar que, algunas veces, un error activa preocupación por tu imagen o futuro. Revisar evidencia concreta puede ayudarte a calibrar esa lectura.",
+            high: "En tus respuestas aparece una posible activación alta de pensamiento catastrófico. Un error podría sentirse como una amenaza mayor para tu imagen o futuro de lo que la situación justifica."
+        }
+    },
+    {
+        id: 11,
+        text: "Trato de encontrar pruebas que validen mis opiniones antes que cuestionarlas.",
+        filtro: "Sesgo de Confirmación",
+        categoria: "cognitivo",
+        teoria: "Sesgo de Confirmación / Razonamiento Motivado",
+        reflexion: "¿Estoy buscando comprender mejor la realidad o reforzar una conclusión que ya tomé?",
+        feedbacks: {
+            low: "Tu respuesta sugiere disposición a cuestionar tus propias opiniones. Esa práctica es central para el pensamiento crítico y el aprendizaje.",
+            mid: "Tu respuesta podría indicar que a veces buscas validación antes que contraste. Es una tendencia común, pero puede limitar la revisión de ideas propias.",
+            high: "En tus respuestas aparece una posible activación alta del sesgo de confirmación. Buscar pruebas solo para validar una opinión puede cerrar el diálogo y reducir aprendizaje."
+        }
+    },
+    {
+        id: 12,
+        text: "Si considero que alguien es muy inteligente, tiendo a minimizar sus errores.",
+        filtro: "Efecto Halo",
+        categoria: "perceptivo",
+        teoria: "Efecto Halo",
+        reflexion: "¿Estoy evaluando el error con el mismo criterio que usaría si no tuviera esa imagen positiva de la persona?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que puedes evaluar errores sin que una cualidad positiva domine toda tu percepción. Esto favorece criterios más consistentes.",
+            mid: "Tu respuesta podría indicar que una imagen positiva influye parcialmente en cómo interpretas errores. El efecto halo puede suavizar fallas que convendría mirar con claridad.",
+            high: "En tus respuestas aparece una posible activación alta del efecto halo. Considerar a alguien inteligente podría llevarte a minimizar errores que en otra persona evaluarías con más severidad."
+        }
+    },
+    {
+        id: 13,
+        text: "Cuando una persona actúa de forma inadecuada, raramente considero factores externos que podrían influir.",
+        filtro: "Sesgo de Atribución",
+        categoria: "cognitivo",
+        teoria: "Sesgo de Atribución / Error Fundamental de Atribución",
+        reflexion: "¿Qué información contextual podría cambiar mi interpretación de esta conducta?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que sí consideras factores externos antes de cerrar una interpretación. Esto ayuda a evitar juicios apresurados.",
+            mid: "Tu respuesta podría indicar que a veces pasas por alto factores externos. Considerarlos no justifica toda conducta, pero mejora la comprensión del contexto.",
+            high: "En tus respuestas aparece una posible activación alta del sesgo de atribución. Si rara vez consideras factores externos, podrías interpretar conductas de forma más dura o incompleta."
+        }
+    },
+    {
+        id: 14,
+        text: "Mis expectativas sobre otras personas influyen en cómo las trato o escucho.",
+        filtro: "Efecto Pigmalión",
+        categoria: "relacional",
+        teoria: "Efecto Pigmalión",
+        reflexion: "¿Mis expectativas están abriendo o cerrando posibilidades en la relación con esta persona?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que intentas escuchar y tratar a las personas más allá de expectativas previas. Esto abre espacio para que muestren matices y cambios.",
+            mid: "Tu respuesta podría indicar que tus expectativas influyen parcialmente en tu manera de tratar o escuchar. Hacer visible ese filtro permite gestionarlo mejor.",
+            high: "En tus respuestas aparece una posible activación alta del efecto Pigmalión. Tus expectativas podrían estar moldeando el trato que das y, con ello, las respuestas que recibes."
+        }
+    },
+    {
+        id: 15,
+        text: "En situaciones de tensión, recuerdo más fácilmente comentarios negativos que positivos.",
+        filtro: "Atención Selectiva / Emocional",
+        categoria: "emocional",
+        teoria: "Atención Selectiva bajo Tensión",
+        reflexion: "Después de una situación tensa, ¿qué comentarios positivos o neutros podría estar olvidando?",
+        feedbacks: {
+            low: "Tu respuesta sugiere que incluso bajo tensión puedes recordar información positiva o neutra. Esa amplitud ayuda a interpretar mejor lo ocurrido.",
+            mid: "Tu respuesta podría indicar que la tensión aumenta el peso de los comentarios negativos. Es útil revisar deliberadamente qué otra información estuvo presente.",
+            high: "En tus respuestas aparece una posible activación alta de atención selectiva bajo tensión. El estrés puede hacer que los comentarios negativos sean más memorables que el resto de la interacción."
+        }
+    }
+];
+
+const CATEGORIAS = {
+    cognitivo: { label: "Cognitivos", elId: "bars-cognitivos", color: "#a78bfa" },
+    relacional: { label: "Relacionales", elId: "bars-relacionales", color: "#34d399" },
+    perceptivo: { label: "Perceptivos", elId: "bars-perceptivos", color: "#fbbf24" },
+    emocional: { label: "Emocionales", elId: "bars-emocionales", color: "#fb7185" }
+};
+
+const OPTIONS = [
+    { label: "Nunca o casi nunca", val: 1, cls: "sel-1" },
+    { label: "Pocas veces", val: 2, cls: "sel-2" },
+    { label: "A veces sí, a veces no", val: 3, cls: "sel-3" },
+    { label: "Con bastante frecuencia", val: 4, cls: "sel-4" },
+    { label: "Siempre o casi siempre", val: 5, cls: "sel-5" }
+];
+
+const QUESTION_ORDER = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+const quizQuestions = QUESTION_ORDER.map(index => questions[index]);
+
+let answers = new Array(quizQuestions.length).fill(null);
+let totalScore = 0;
+let latestReport = "";
+
+function renderAll() {
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = '';
+
+    quizQuestions.forEach((q, idx) => {
+        const card = document.createElement('article');
+        card.className = 'question-card';
+        card.id = `qcard-${idx}`;
+        card.style.animationDelay = `${idx * 0.03}s`;
+
+        const optionsHtml = OPTIONS.map((o, oi) => `
+            <div>
+                <input class="visually-hidden" type="radio" name="q-${idx}" id="opt-${idx}-${oi}"
+                       value="${o.val}" onchange="selectOption(${idx}, ${oi})">
+                <label class="likert-option" for="opt-${idx}-${oi}" id="label-${idx}-${oi}">
+                    <span class="likert-dot" aria-hidden="true"></span>
+                    <span class="opt-label">${o.label}</span>
+                    <span class="opt-score">${o.val}</span>
+                </label>
+            </div>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-header">
+                <div class="q-number" aria-hidden="true">${idx + 1}</div>
+                <div>
+                    <h2 class="q-text" id="q-title-${idx}">${q.text}</h2>
+                    <div class="q-tag">${q.filtro}</div>
+                </div>
+            </div>
+            <fieldset class="likert-wrap" aria-labelledby="q-title-${idx}">
+                <legend class="visually-hidden">Selecciona la frecuencia que mejor describe tu experiencia</legend>
+                ${optionsHtml}
+            </fieldset>
+            <div class="feedback-panel" id="fb-${idx}" aria-live="polite"></div>
+            <div class="q-footer" id="qfooter-${idx}">
+                <span class="edit-note">Puedes cambiar esta respuesta antes de ver el perfil.</span>
+                <button class="btn-secondary" type="button" onclick="scrollToNext(${idx})">${idx < 14 ? 'Siguiente' : 'Ir al cierre'}</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    const submitWrap = document.createElement('div');
+    submitWrap.style.cssText = 'text-align:center; padding: 20px 0 8px;';
+    submitWrap.id = 'submit-wrap';
+    submitWrap.innerHTML = `
+        <button class="btn-primary" id="submit-btn" type="button" onclick="showResults()" disabled
+                style="font-size:16px; padding:16px 40px; opacity:0.35">
+            Ver mi perfil orientativo
+        </button>
+        <p style="font-size:13px; color:var(--muted); margin-top:12px" id="submit-hint">
+            Responde todas las preguntas para continuar
+        </p>
+    `;
+    container.appendChild(submitWrap);
+    updateProgress();
+}
+
+function selectOption(qIdx, oIdx) {
+    answers[qIdx] = OPTIONS[oIdx].val;
+    totalScore = answers.reduce((a, v) => a + (v || 0), 0);
+
+    OPTIONS.forEach((o, i) => {
+        const label = document.getElementById(`label-${qIdx}-${i}`);
+        label.classList.remove('sel-1', 'sel-2', 'sel-3', 'sel-4', 'sel-5');
+        if (i === oIdx) label.classList.add(o.cls);
+    });
+
+    showFeedback(qIdx, OPTIONS[oIdx].val);
+    updateProgress();
+    checkAllAnswered();
+}
+
+function showFeedback(qIdx, val) {
+    const q = quizQuestions[qIdx];
+    const panel = document.getElementById(`fb-${qIdx}`);
+    let level, panelClass, headClass, headText;
+
+    if (val <= 2) {
+        level = 'low';
+        panelClass = 'ok';
+        headClass = 'ok-h';
+        headText = 'Baja activación percibida en esta situación';
+    } else if (val === 3) {
+        level = 'mid';
+        panelClass = 'caution';
+        headClass = 'caution-h';
+        headText = 'Activación moderada percibida';
+    } else {
+        level = 'high';
+        panelClass = 'alert';
+        headClass = 'alert-h';
+        headText = 'Alta activación percibida en esta situación';
+    }
+
+    panel.className = `feedback-panel ${panelClass}`;
+    panel.innerHTML = `
+        <div class="fb-theory">${q.teoria}</div>
+        <div class="fb-head ${headClass}">
+            <span>${headText}</span>
+        </div>
+        <p>${q.feedbacks[level]}</p>
+        <div class="fb-reflection">${q.reflexion}</div>
+    `;
+    panel.style.display = 'block';
+}
+
+function scrollToNext(qIdx) {
+    const target = qIdx < quizQuestions.length - 1 ? document.getElementById(`qcard-${qIdx + 1}`) : document.getElementById('submit-wrap');
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function checkAllAnswered() {
+    const answered = answers.filter(a => a !== null).length;
+    const btn = document.getElementById('submit-btn');
+    const hint = document.getElementById('submit-hint');
+
+    if (answered === quizQuestions.length) {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        hint.textContent = 'Listo. Aún puedes ajustar respuestas antes de ver el perfil.';
+        hint.style.color = 'var(--success)';
+    } else {
+        btn.disabled = true;
+        btn.style.opacity = '0.35';
+        hint.textContent = `Faltan ${quizQuestions.length - answered} pregunta${quizQuestions.length - answered !== 1 ? 's' : ''} por responder`;
+        hint.style.color = 'var(--muted)';
+    }
+}
+
+function updateProgress() {
+    const answered = answers.filter(a => a !== null).length;
+    const pct = (answered / quizQuestions.length) * 100;
+
+    document.getElementById('prog-bar').style.width = pct + '%';
+    document.getElementById('prog-label').textContent = `${answered} de ${quizQuestions.length} respondidas`;
+    document.getElementById('prog-score').textContent = answered > 0
+        ? `Índice parcial: ${totalScore}`
+        : 'Índice: —';
+
+    document.getElementById('nav-counter').textContent = `${answered} / ${quizQuestions.length}`;
+    document.getElementById('nav-bar-fill').style.width = pct + '%';
+}
+
+function groupedStats() {
+    const byBias = {};
+    const byCategory = {};
+
+    quizQuestions.forEach((q, idx) => {
+        const val = answers[idx] || 0;
+        if (!byBias[q.filtro]) {
+            byBias[q.filtro] = { name: q.filtro, categoria: q.categoria, total: 0, count: 0, avg: 0 };
+        }
+        byBias[q.filtro].total += val;
+        byBias[q.filtro].count += 1;
+
+        if (!byCategory[q.categoria]) {
+            byCategory[q.categoria] = { key: q.categoria, total: 0, count: 0, avg: 0 };
+        }
+        byCategory[q.categoria].total += val;
+        byCategory[q.categoria].count += 1;
+    });
+
+    Object.values(byBias).forEach(item => item.avg = item.total / item.count);
+    Object.values(byCategory).forEach(item => item.avg = item.total / item.count);
+
+    return { byBias, byCategory };
+}
+
+function levelFromAvg(avg) {
+    if (avg <= 2.4) return { label: "baja", color: "var(--success)" };
+    if (avg <= 3.6) return { label: "moderada", color: "var(--accent)" };
+    return { label: "alta", color: "var(--danger)" };
+}
+
+function showResults() {
+    document.getElementById('quiz-container').style.display = 'none';
+    document.getElementById('results-screen').style.display = 'block';
+
+    const score = totalScore;
+    const maxScore = 75;
+    const minScore = 15;
+    const pct = (score - minScore) / (maxScore - minScore);
+    const circumference = 377;
+    const offset = circumference - (pct * circumference);
+    const arc = document.getElementById('score-arc');
+    const ringColor = score <= 35 ? '#34d399' : score <= 55 ? '#fbbf24' : '#fb7185';
+    arc.style.stroke = ringColor;
+    arc.style.strokeDashoffset = offset;
+    document.getElementById('ring-score').textContent = score;
+
+    let title, desc, interpretTitle, interpretBody, bullets;
+
+    if (score <= 35) {
+        title = "Baja activación percibida de filtros";
+        desc = "Tus respuestas sugieren que reconoces estos filtros con baja frecuencia en las situaciones planteadas. Esto no implica ausencia de sesgos, sino una posible mayor capacidad de observarlos y gestionarlos.";
+        interpretTitle = "Lectura orientativa";
+        interpretBody = "La baja activación percibida puede indicar que sueles revisar tus interpretaciones antes de responder. Conviene observar si este patrón se mantiene bajo presión, conflicto o evaluación.";
+        bullets = [
+            "Sigue practicando escucha activa y búsqueda de evidencia que contradiga tus primeras impresiones.",
+            "Usa este resultado como punto de conversación, no como etiqueta personal.",
+            "Observa qué sesgo sube más cuando hay estrés o incertidumbre."
+        ];
+    } else if (score <= 55) {
+        title = "Activación moderada de filtros";
+        desc = "En tus respuestas aparecen varios filtros con presencia intermedia. Esta zona suele ser fértil para el aprendizaje: los patrones son visibles y todavía pueden intervenirse con práctica consciente.";
+        interpretTitle = "Pasos para el desarrollo";
+        interpretBody = "La activación moderada sugiere oportunidades concretas para pausar, pedir contexto y contrastar interpretaciones antes de tomar decisiones o responder en conversaciones difíciles.";
+        bullets = [
+            "Identifica los dos sesgos con promedio más alto y formula una práctica breve para cada uno.",
+            "Antes de emitir un juicio, pregúntate: ¿qué evidencia tengo y qué evidencia estoy dejando fuera?",
+            "Introduce un chequeo de sesgo antes de responder en situaciones de tensión."
+        ];
+    } else {
+        title = "Alta activación percibida de filtros";
+        desc = "Tus respuestas podrían indicar que varios filtros aparecen con fuerza en las situaciones planteadas. Esta lectura no es diagnóstica: señala áreas valiosas para practicar autoconciencia comunicacional.";
+        interpretTitle = "Una oportunidad de desarrollo";
+        interpretBody = "La alta activación percibida puede vincularse con hábitos comunicacionales, contextos exigentes o experiencias previas. El foco no es etiquetarte, sino elegir dónde intervenir primero.";
+        bullets = [
+            "Trabaja primero con los sesgos de mayor promedio: suelen ser los que más distorsionan la conversación.",
+            "Contrasta tus interpretaciones con alguien de confianza antes de tomar decisiones sensibles.",
+            "En situaciones de amenaza o conflicto, separa hechos observables, inferencias y escenarios imaginados."
+        ];
+    }
+
+    document.getElementById('results-title').textContent = title;
+    document.getElementById('results-desc').textContent = desc;
+    document.getElementById('interpret-title').textContent = interpretTitle;
+    document.getElementById('interpret-body').textContent = interpretBody;
+    document.getElementById('interpret-list').innerHTML = bullets.map(b => `<li>${b}</li>`).join('');
+
+    renderProfileBars();
+    renderFinalReflection();
+    latestReport = buildProfileText();
+
+    document.getElementById('results-screen').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderProfileBars() {
+    const { byBias } = groupedStats();
+
+    Object.entries(CATEGORIAS).forEach(([key, cat]) => {
+        const el = document.getElementById(cat.elId);
+        const items = Object.values(byBias).filter(item => item.categoria === key);
+        el.innerHTML = items.map(item => {
+            const level = levelFromAvg(item.avg);
+            const pct = (item.avg / 5) * 100;
+            return `
+                <div class="filter-bar-item">
+                    <div class="filter-bar-name" title="${item.name}">${item.name}</div>
+                    <div class="filter-bar-track" aria-hidden="true">
+                        <div class="filter-bar-fill" style="width:${pct}%; background:${level.color}"></div>
+                    </div>
+                    <div class="filter-bar-val" style="color:${level.color}" aria-label="${item.name}: promedio ${item.avg.toFixed(1)}">${item.avg.toFixed(1)}</div>
+                </div>
+            `;
+        }).join('');
+    });
+}
+
+function renderFinalReflection() {
+    const { byBias } = groupedStats();
+    const sorted = Object.values(byBias).sort((a, b) => b.avg - a.avg);
+    const top = sorted[0];
+    const level = levelFromAvg(top.avg);
+
+    const prompts = {
+        "Atención Selectiva": "Durante la próxima semana, ¿qué evidencia positiva o neutra voy a registrar antes de concluir que algo salió mal?",
+        "Sesgo de Atribución": "Antes de juzgar una conducta ajena, ¿qué dos factores de contexto necesito preguntar o verificar?",
+        "Efecto Pigmalión": "¿A quién podría estar dando menos oportunidades por una expectativa previa que quizá necesita revisión?",
+        "Primera Impresión": "¿Qué persona merece que actualice mi percepción con evidencia más reciente?",
+        "Efecto Halo": "¿Qué cualidad estoy generalizando sin haberla observado directamente?",
+        "Sesgo de Confirmación": "¿Qué información tendría que tomar en serio aunque contradiga mi opinión actual?",
+        "Pensamiento Catastrófico": "¿Cuál es el escenario más probable, no el peor, según la evidencia disponible?",
+        "Atención Selectiva / Emocional": "¿Qué parte de mi interpretación nace del mensaje y qué parte nace de la tensión o ansiedad del momento?",
+        "Confirmación / Pigmalión": "¿Qué conducta concreta de esta persona podría mirar sin encajarla de inmediato en mi expectativa previa?"
+    };
+
+    document.getElementById('reflection-title').textContent = `Pregunta final: ${top.name}`;
+    document.getElementById('reflection-body').textContent =
+        `Este fue tu filtro con promedio más alto (${top.avg.toFixed(1)}, activación ${level.label}). ${prompts[top.name]}`;
+}
+
+function buildProfileText() {
+    const { byBias, byCategory } = groupedStats();
+    const lines = [];
+    lines.push("Perfil orientativo de filtros y sesgos en comunicación");
+    lines.push("");
+    lines.push(`Índice de activación percibida: ${totalScore} de 75`);
+    lines.push("Nota: esta herramienta no diagnostica; organiza respuestas para reflexión personal y pedagógica.");
+    lines.push("");
+    lines.push("Promedios por categoría:");
+    Object.entries(CATEGORIAS).forEach(([key, cat]) => {
+        const avg = byCategory[key]?.avg || 0;
+        lines.push(`- ${cat.label}: ${avg.toFixed(1)} / 5 (${levelFromAvg(avg).label})`);
+    });
+    lines.push("");
+    lines.push("Promedios por sesgo:");
+    Object.values(byBias)
+        .sort((a, b) => b.avg - a.avg)
+        .forEach(item => lines.push(`- ${item.name}: ${item.avg.toFixed(1)} / 5 (${levelFromAvg(item.avg).label})`));
+
+    const top = Object.values(byBias).sort((a, b) => b.avg - a.avg)[0];
+    lines.push("");
+    lines.push(`Pregunta de reflexión final: ¿qué práctica concreta puedo probar esta semana para observar mejor ${top.name}?`);
+    return lines.join("\n");
+}
+
+async function copyProfile() {
+    latestReport = buildProfileText();
+    try {
+        await navigator.clipboard.writeText(latestReport);
+        alert("Perfil copiado al portapapeles.");
+    } catch (error) {
+        const box = document.createElement('textarea');
+        box.value = latestReport;
+        document.body.appendChild(box);
+        box.select();
+        document.execCommand('copy');
+        box.remove();
+        alert("Perfil copiado al portapapeles.");
+    }
+}
+
+function downloadProfile() {
+    latestReport = buildProfileText();
+    const blob = new Blob([latestReport], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = "perfil-orientativo-sesgos-comunicacion.txt";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}
+
+function resetAll() {
+    answers = new Array(quizQuestions.length).fill(null);
+    totalScore = 0;
+    latestReport = "";
+    document.getElementById('results-screen').style.display = 'none';
+    document.getElementById('quiz-container').style.display = 'block';
+    renderAll();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+renderAll();
+</script>
+</body>
+</html>
